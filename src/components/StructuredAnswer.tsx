@@ -91,6 +91,10 @@ const StructuredAnswer: React.FC<StructuredAnswerProps> = ({ answer }) => {
 
 // Helper function to parse the markdown-style response into structured sections
 function parseAnswerIntoSections(answer: string) {
+  if (!answer || answer.trim() === '') {
+    return [];
+  }
+
   const sections = [];
   const lines = answer.split("\n").filter(line => line.trim());
   
@@ -111,16 +115,20 @@ function parseAnswerIntoSections(answer: string) {
     }
     // Bullet point with title
     else if (line.match(/^\s*-\s+\*\*([^*]+)\*\*:/)) {
-      const title = line.match(/^\s*-\s+\*\*([^*]+)\*\*:/)[1].trim();
-      currentBullet = { type: "bullet", title, points: [] };
-      currentSection.content.push(currentBullet);
-      currentNested = null;
+      if (currentSection) { // Check if currentSection exists before adding to it
+        const title = line.match(/^\s*-\s+\*\*([^*]+)\*\*:/)[1].trim();
+        currentBullet = { type: "bullet", title, points: [] };
+        currentSection.content.push(currentBullet);
+        currentNested = null;
+      }
     }
     // Nested bullet point with title
     else if (line.match(/^\s+-\s+\*\*([^*]+)\*\*:/)) {
-      const title = line.match(/^\s+-\s+\*\*([^*]+)\*\*:/)[1].trim();
-      currentNested = { type: "nested", title, points: [] };
-      currentSection.content.push(currentNested);
+      if (currentSection) { // Check if currentSection exists before adding to it
+        const title = line.match(/^\s+-\s+\*\*([^*]+)\*\*:/)[1].trim();
+        currentNested = { type: "nested", title, points: [] };
+        currentSection.content.push(currentNested);
+      }
     }
     // Regular bullet point
     else if (line.trim().startsWith("-")) {
@@ -129,16 +137,22 @@ function parseAnswerIntoSections(answer: string) {
         currentNested.points.push(text);
       } else if (currentBullet) {
         currentBullet.points.push(text);
-      } else {
+      } else if (currentSection) { // Add check to ensure currentSection exists
         currentSection.content.push({ type: "text", text });
       }
     }
     // Regular text
     else {
-      currentSection.content.push({ type: "text", text: line.trim() });
+      if (currentSection) { // Check if currentSection exists before adding to it
+        currentSection.content.push({ type: "text", text: line.trim() });
+      } else {
+        // If we encounter text before any section header, create a default section
+        currentSection = { title: "Information", content: [{ type: "text", text: line.trim() }] };
+      }
     }
   }
 
+  // Don't forget to push the last section
   if (currentSection) {
     sections.push(currentSection);
   }
