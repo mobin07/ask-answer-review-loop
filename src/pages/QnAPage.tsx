@@ -1,10 +1,12 @@
+
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { MessageSquare, Send, ThumbsUp, ThumbsDown, Loader2 } from "lucide-react";
+import { MessageSquare, Send, ThumbsUp, ThumbsDown, Loader2, List } from "lucide-react";
 import StructuredAnswer from "@/components/StructuredAnswer";
 
 const QnAPage = () => {
@@ -59,9 +61,17 @@ const QnAPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-12 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Ask & Review</h1>
-          <p className="text-gray-600">Ask your question and help us improve by reviewing the answer</p>
+        <div className="flex justify-between items-center mb-8">
+          <div className="text-center flex-1">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Ask & Review</h1>
+            <p className="text-gray-600">Ask your question and help us improve by reviewing the answer</p>
+          </div>
+          <Button asChild variant="outline" className="border-purple-300">
+            <Link to="/questions" className="flex items-center">
+              <List className="mr-2 h-4 w-4" />
+              Browse Questions
+            </Link>
+          </Button>
         </div>
         
         <Card className="p-6 shadow-lg border-purple-100">
