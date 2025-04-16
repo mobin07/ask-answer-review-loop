@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { MessageSquare, Send, ThumbsUp, ThumbsDown, Loader2 } from "lucide-react";
+import StructuredAnswer from "@/components/StructuredAnswer";
 
 const QnAPage = () => {
   const [question, setQuestion] = useState("");
@@ -29,8 +29,7 @@ const QnAPage = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Mock response - this would be replaced with an actual API call
-      const mockResponse = `This is a simulated answer to your question: "${question}". 
-      In a real implementation, this would come from an actual API integration.`;
+      const mockResponse = `### Response Structure for Setting Up Converse Desk\n\n1. **Introduction**\n   - Setting up the Converse Desk involves configuring necessary settings in your Salesforce organization to ensure smooth functionality of SMS Magic.\n\n2. **Issue Analysis**\n   - **Function and Component**: The Converse Desk function relies mainly on configurations within Converse settings, sender ID assignments, and user permissions in Salesforce to manage incoming and outgoing messages. \n\n3. **Troubleshooting Steps**\n   - **Access Converse Settings**: \n     - Log in to your Salesforce account and navigate to SMS Magic Converse Home.\n     - Access the 'Converse Settings' section to configure the desk.\n   \n   - **Configuration of Notifications**:\n     - **Sound Notification**: Go to Conversations under General Settings of Converse Desk. Enable the 'Play sound for incoming message' to receive sound notifications.\n     - **Email Notification**: Ensure that email notifications for inbound messages in the Sender ID & Assignment section are turned on.\n   \n   - **Set Up Sender ID**:\n     - Go to the Sender ID & Assignment section within Converse Settings and use "Add Sender ID" to set up the required Sender IDs.\n\n   - **User Management**:\n     - Navigate to the User Management section within Converse Settings to add users and assign the necessary licenses.\n\n4. **Root Cause Analysis**\n   - Common issues arise due to improper assignment of sender IDs, incorrect notification settings, or insufficient user permissions.\n\n5. **Escalation and Handling**\n   - If you encounter persistent issues after these configurations, consider reaching out to SMS Magic support by emailing care@screen-magic.com for further assistance.`;
       
       setAnswer(mockResponse);
       setShowReview(true);
@@ -103,13 +102,11 @@ const QnAPage = () => {
 
         {answer && (
           <Card className="p-6 shadow-lg border-purple-100 mt-8">
-            <h2 className="text-lg font-medium mb-2 flex items-center">
+            <h2 className="text-lg font-medium mb-4 flex items-center">
               <span className="bg-purple-100 text-purple-800 py-1 px-3 rounded-full text-sm mr-3">Answer</span>
               Response
             </h2>
-            <div className="bg-white p-4 rounded-md border border-gray-100 min-h-[100px] whitespace-pre-line">
-              {answer}
-            </div>
+            <StructuredAnswer answer={answer} />
           </Card>
         )}
 
