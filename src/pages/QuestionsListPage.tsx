@@ -1,17 +1,16 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { 
   Search,
   PlusCircle,
   BookOpen,
-  ChevronRight
+  ArrowRight
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
 import {
   Pagination,
   PaginationContent,
@@ -21,7 +20,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import StructuredAnswer from "@/components/StructuredAnswer";
 
 interface Question {
   id: string;
@@ -59,7 +57,6 @@ const QuestionsListPage = () => {
   ]);
   const [currentPage, setCurrentPage] = useState(1);
   const [questionsPerPage] = useState(5);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   
   // Pagination logic
   const indexOfLastQuestion = currentPage * questionsPerPage;
@@ -79,9 +76,9 @@ const QuestionsListPage = () => {
     setCurrentPage(1); // Reset to first page when searching
   };
   
-  // Select a question to view
-  const handleSelectQuestion = (question: Question) => {
-    setSelectedQuestion(question);
+  // Navigate to single question page
+  const handleSelectQuestion = (questionId: string) => {
+    navigate(`/question/${questionId}`);
   };
   
   // Navigate to ask a new question
@@ -91,7 +88,7 @@ const QuestionsListPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-8 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Questions Library</h1>
           <Button 
@@ -103,154 +100,128 @@ const QuestionsListPage = () => {
           </Button>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Questions List Section */}
-          <div className="md:col-span-1">
-            <Card className="p-4">
-              <div className="mb-4 relative">
-                <Input
-                  type="text"
-                  placeholder="Search questions..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  className="pl-10 pr-4"
-                />
-                <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-              </div>
-              
-              <div className="overflow-y-auto max-h-[calc(100vh-300px)]">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Questions</TableHead>
-                      <TableHead className="w-[100px]">Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {currentQuestions.map((question) => (
-                      <TableRow 
-                        key={question.id}
-                        className={selectedQuestion?.id === question.id ? "bg-purple-50" : ""}
-                      >
-                        <TableCell className="font-medium">{question.question}</TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => handleSelectQuestion(question)}
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    
-                    {currentQuestions.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={2} className="text-center py-6 text-gray-500">
-                          No questions found matching your search.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <Pagination className="mt-4">
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                      />
-                    </PaginationItem>
-                    
-                    {Array.from({ length: Math.min(totalPages, 5) }).map((_, index) => {
-                      const page = currentPage > 3 && totalPages > 5 
-                        ? currentPage - 3 + index 
-                        : index + 1;
-                        
-                      if (page > totalPages) return null;
-                      
-                      return (
-                        <PaginationItem key={page}>
-                          <PaginationLink 
-                            isActive={currentPage === page}
-                            onClick={() => setCurrentPage(page)}
-                          >
-                            {page}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    })}
-                    
-                    {totalPages > 5 && currentPage < totalPages - 2 && (
-                      <>
-                        <PaginationItem>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink onClick={() => setCurrentPage(totalPages)}>
-                            {totalPages}
-                          </PaginationLink>
-                        </PaginationItem>
-                      </>
-                    )}
-                    
-                    <PaginationItem>
-                      <PaginationNext 
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              )}
-            </Card>
+        <Card className="p-6 shadow-lg">
+          <div className="mb-6 relative">
+            <Input
+              type="text"
+              placeholder="Search questions..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="pl-10 pr-4"
+            />
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
           
-          {/* Question Display Section */}
-          <div className="md:col-span-2">
-            {selectedQuestion ? (
-              <Card className="p-6 shadow-lg border-purple-100">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center">
-                    <BookOpen className="h-6 w-6 text-purple-600 mr-3" />
-                    <h2 className="text-xl font-semibold text-gray-800">Question Details</h2>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant="outline" 
-                      onClick={handleAskQuestion} 
-                      className="border-purple-300"
-                    >
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Ask New Question
-                    </Button>
-                  </div>
-                </div>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Question</TableHead>
+                  <TableHead className="w-[150px]">Status</TableHead>
+                  <TableHead className="w-[180px]">Date</TableHead>
+                  <TableHead className="w-[100px]">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentQuestions.map((question) => (
+                  <TableRow key={question.id}>
+                    <TableCell className="font-medium">{question.question}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        question.status === "reviewed" 
+                          ? "bg-green-100 text-green-800" 
+                          : question.status === "answered" 
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}>
+                        {question.status.charAt(0).toUpperCase() + question.status.slice(1)}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(question.timestamp).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleSelectQuestion(question.id)}
+                        className="hover:bg-purple-50"
+                      >
+                        <ArrowRight className="h-4 w-4 text-purple-600" />
+                        <span className="sr-only">View question</span>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
                 
-                <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                  <h3 className="font-medium text-lg text-gray-800 mb-1">Question:</h3>
-                  <p className="text-gray-700">{selectedQuestion.question}</p>
-                </div>
-                
-                <h3 className="font-medium text-lg text-gray-800 mb-3">Answer:</h3>
-                <StructuredAnswer answer={selectedQuestion.answer} />
-              </Card>
-            ) : (
-              <Card className="p-6 shadow-lg border-purple-100 flex flex-col items-center justify-center h-full min-h-[400px]">
-                <BookOpen className="h-12 w-12 text-gray-300 mb-4" />
-                <h3 className="text-xl font-medium text-gray-600">Select a question</h3>
-                <p className="text-gray-500 mt-2 text-center max-w-md">
-                  Choose a question from the list to view its details and answer
-                </p>
-              </Card>
-            )}
+                {currentQuestions.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-6 text-gray-500">
+                      No questions found matching your search.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
-        </div>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <Pagination className="mt-6">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: Math.min(totalPages, 5) }).map((_, index) => {
+                  const page = currentPage > 3 && totalPages > 5 
+                    ? currentPage - 3 + index 
+                    : index + 1;
+                    
+                  if (page > totalPages) return null;
+                  
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink 
+                        isActive={currentPage === page}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                
+                {totalPages > 5 && currentPage < totalPages - 2 && (
+                  <>
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink onClick={() => setCurrentPage(totalPages)}>
+                        {totalPages}
+                      </PaginationLink>
+                    </PaginationItem>
+                  </>
+                )}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </Card>
       </div>
     </div>
   );
