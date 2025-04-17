@@ -3,7 +3,12 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useQuestionStore } from "@/services/questionService";
 
-const QuestionSearch = () => {
+interface QuestionSearchProps {
+  placeholder?: string;
+  className?: string;
+}
+
+const QuestionSearch = ({ placeholder = "Search questions...", className = "mb-6" }: QuestionSearchProps) => {
   const { searchTerm, setSearchTerm } = useQuestionStore();
   
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -11,10 +16,10 @@ const QuestionSearch = () => {
   };
   
   return (
-    <div className="mb-6 relative">
+    <div className={`relative ${className}`}>
       <Input
         type="text"
-        placeholder="Search questions..."
+        placeholder={placeholder}
         value={searchTerm}
         onChange={handleSearch}
         className="pl-10 pr-4"

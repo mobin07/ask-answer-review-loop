@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import QnAPage from "./pages/QnAPage";
 import QuestionsListPage from "./pages/QuestionsListPage";
 import SingleQuestionPage from "./pages/SingleQuestionPage";
+import ChatQnAPage from "./pages/ChatQnAPage";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/qna" element={<QnAPage />} />
+          <Route path="/chat" element={<ChatQnAPage />} />
           <Route path="/questions" element={<QuestionsListPage />} />
           <Route path="/question/:questionId" element={<SingleQuestionPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
