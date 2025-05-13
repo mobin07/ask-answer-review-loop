@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { MessageSquare, Loader2 } from "lucide-react";
 import StructuredAnswer from "@/components/StructuredAnswer";
 import BlockForm from "@/components/BlockForm";
+import AccountBlockForm from "@/components/AccountBlockForm";
 
 type MessageType = {
   id: string;
@@ -165,7 +166,7 @@ const ChatQnAPage = () => {
             className={`px-6 py-3 cursor-pointer border-b-2 ${activeTab === "TAB2" ? "border-pink-500 text-pink-500 font-medium" : "border-transparent"}`}
             onClick={() => setActiveTab("TAB2")}
           >
-            TAB2
+            ACCOUNT SETTINGS
           </div>
         </div>
       </div>
@@ -174,6 +175,8 @@ const ChatQnAPage = () => {
       <div className="flex-1 p-4 md:p-6 max-w-4xl mx-auto w-full">
         {activeTab === "BLOCK NO" ? (
           <BlockForm />
+        ) : activeTab === "TAB2" ? (
+          <AccountBlockForm />
         ) : (
           <ScrollArea className="h-[calc(100vh-280px)] w-full pr-4">
             {messages.length === 0 ? (
@@ -251,7 +254,7 @@ const ChatQnAPage = () => {
       </div>
 
       {/* Input area - only shown for chat tab */}
-      {activeTab !== "BLOCK NO" && (
+      {activeTab !== "BLOCK NO" && activeTab !== "TAB2" && (
         <div className="border-t bg-white p-4 sticky bottom-0">
           <div className="max-w-4xl mx-auto flex items-end gap-2">
             <Card className="flex-1 flex items-center p-2 border rounded-full">
