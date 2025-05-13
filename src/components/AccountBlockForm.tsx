@@ -26,6 +26,7 @@ const AccountBlockForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [accountStatus, setAccountStatus] = useState<AccountStatus | null>(null);
+  const [isStatusChecked, setIsStatusChecked] = useState(false);
   
   const form = useForm<BlockingFormValues>({
     defaultValues: {
@@ -47,12 +48,14 @@ const AccountBlockForm = () => {
     }
 
     setIsChecking(true);
+    setIsStatusChecked(false);
     
     try {
       // This would be a real API call in a production application
       const status = await mockCheckAccountStatus(accountId);
       
       setAccountStatus(status);
+      setIsStatusChecked(true);
       
       // Update form values with current settings
       form.setValue("blockUrlInMessage", status.blockUrlInMessage);
@@ -71,16 +74,17 @@ const AccountBlockForm = () => {
         description: error instanceof Error ? error.message : "An error occurred checking account",
         variant: "destructive",
       });
+      setIsStatusChecked(false);
     } finally {
       setIsChecking(false);
     }
   };
 
   const onSubmit = async (data: BlockingFormValues) => {
-    if (!data.accountId.trim()) {
+    if (!isStatusChecked) {
       toast({
         title: "Error",
-        description: "Please enter an Account ID",
+        description: "Please check account status first",
         variant: "destructive"
       });
       return;
@@ -177,6 +181,7 @@ const AccountBlockForm = () => {
                 value={form.watch("accountId")}
                 onChange={(e) => form.setValue("accountId", e.target.value)}
                 className="pl-10"
+                disabled={isChecking}
               />
             </div>
             <Button 
@@ -208,7 +213,7 @@ const AccountBlockForm = () => {
                 control={form.control}
                 name="blockUrlInMessage"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                  <FormItem className={`flex flex-row items-center justify-between rounded-lg border p-3 ${!isStatusChecked ? 'opacity-50' : ''}`}>
                     <div className="space-y-0.5">
                       <FormLabel className="text-base flex items-center">
                         <Slash className="h-4 w-4 mr-2 text-red-500" />
@@ -222,6 +227,7 @@ const AccountBlockForm = () => {
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled={!isStatusChecked}
                       />
                     </FormControl>
                   </FormItem>
@@ -232,7 +238,7 @@ const AccountBlockForm = () => {
                 control={form.control}
                 name="blockNumberInMessage"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                  <FormItem className={`flex flex-row items-center justify-between rounded-lg border p-3 ${!isStatusChecked ? 'opacity-50' : ''}`}>
                     <div className="space-y-0.5">
                       <FormLabel className="text-base flex items-center">
                         <Slash className="h-4 w-4 mr-2 text-red-500" />
@@ -246,6 +252,7 @@ const AccountBlockForm = () => {
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled={!isStatusChecked}
                       />
                     </FormControl>
                   </FormItem>
@@ -256,7 +263,7 @@ const AccountBlockForm = () => {
             <Button 
               type="submit" 
               className="w-full"
-              disabled={isLoading || !form.watch("accountId").trim()}
+              disabled={isLoading || !isStatusChecked || !form.watch("accountId").trim()}
             >
               {isLoading ? "Processing..." : "Save Blocking Settings"}
             </Button>
