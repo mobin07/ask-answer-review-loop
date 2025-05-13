@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -125,28 +124,27 @@ const ChatQnAPage = () => {
       <div className="bg-white border-b">
         <div className="max-w-screen-xl mx-auto flex">
           <div 
-            className={`px-6 py-3 cursor-pointer ${activeTab === "INCOMING" ? "border-b-2 border-blue-500" : "text-gray-500"}`}
-            onClick={() => setActiveTab("BLOCK NO")}
+            className="px-6 py-3 cursor-pointer text-gray-500"
           >
             INCOMING
           </div>
           <div 
-            className={`px-6 py-3 cursor-pointer ${activeTab === "OUTGOING" ? "border-b-2 border-blue-500" : "text-gray-500"}`}
+            className="px-6 py-3 cursor-pointer text-gray-500"
           >
             OUTGOING
           </div>
           <div 
-            className={`px-6 py-3 cursor-pointer ${activeTab === "HEALTH CHECK" ? "border-b-2 border-blue-500" : "text-gray-500"}`}
+            className="px-6 py-3 cursor-pointer text-gray-500"
           >
             HEALTH CHECK
           </div>
           <div 
-            className={`px-6 py-3 cursor-pointer ${activeTab === "TROUBLESHOOT" ? "border-b-2 border-blue-500" : "text-gray-500"}`}
+            className="px-6 py-3 cursor-pointer text-gray-500"
           >
             TROUBLESHOOT
           </div>
           <div 
-            className={`px-6 py-3 cursor-pointer border-b-2 border-blue-500 text-blue-500 font-medium`}
+            className="px-6 py-3 cursor-pointer border-b-2 border-blue-500 text-blue-500 font-medium"
           >
             CUSTOMER CASES
           </div>
