@@ -21,7 +21,7 @@ type MessageType = {
   helpful?: boolean | null;
 };
 
-type TabType = "BLOCK NO" | "TAB2";
+type TabType = "BLOCK NO" | "ACCOUNT SETTINGS";
 
 const ChatQnAPage = () => {
   const [messages, setMessages] = useState<MessageType[]>([]);
@@ -161,8 +161,8 @@ const ChatQnAPage = () => {
             BLOCK NO
           </div>
           <div 
-            className={`px-6 py-3 cursor-pointer border-b-2 ${activeTab === "TAB2" ? "border-pink-500 text-pink-500 font-medium" : "border-transparent"}`}
-            onClick={() => setActiveTab("TAB2")}
+            className={`px-6 py-3 cursor-pointer border-b-2 ${activeTab === "ACCOUNT SETTINGS" ? "border-pink-500 text-pink-500 font-medium" : "border-transparent"}`}
+            onClick={() => setActiveTab("ACCOUNT SETTINGS")}
           >
             ACCOUNT SETTINGS
           </div>
@@ -173,7 +173,7 @@ const ChatQnAPage = () => {
       <div className="flex-1 p-4 md:p-6 max-w-4xl mx-auto w-full">
         {activeTab === "BLOCK NO" ? (
           <BlockForm />
-        ) : activeTab === "TAB2" ? (
+        ) : activeTab === "ACCOUNT SETTINGS" ? (
           <AccountBlockForm />
         ) : (
           <ScrollArea className="h-[calc(100vh-280px)] w-full pr-4">
@@ -252,7 +252,7 @@ const ChatQnAPage = () => {
       </div>
 
       {/* Input area - only shown for chat tab */}
-      {activeTab !== "BLOCK NO" && activeTab !== "TAB2" && (
+      {activeTab !== "BLOCK NO" && activeTab !== "ACCOUNT SETTINGS" && (
         <div className="border-t bg-white p-4 sticky bottom-0">
           <div className="max-w-4xl mx-auto flex items-end gap-2">
             <Card className="flex-1 flex items-center p-2 border rounded-full">
