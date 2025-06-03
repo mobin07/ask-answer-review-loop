@@ -4,39 +4,40 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Settings } from "lucide-react";
+import { User, Settings, Save } from "lucide-react";
 import { ConversiveStatus, UseCase } from "@/types/conversive";
 
-interface ConversiveUseCasesProps {
+interface ConversiveBetaFeaturesProps {
   accountStatus: ConversiveStatus | null;
   isStatusChecked: boolean;
   isUpdating: boolean;
   username: string;
   onUsernameChange: (value: string) => void;
-  useCases: UseCase[];
-  isLoadingUseCases: boolean;
-  onFetchUseCases: () => void;
-  onUpdateUseCaseSetting: (featureId: number, enabled: boolean) => void;
+  betaFeatures: UseCase[];
+  isLoadingBetaFeatures: boolean;
+  onFetchBetaFeatures: () => void;
+  onUpdateBetaFeatureSetting: (featureId: number, enabled: boolean) => void;
+  onSaveBetaFeatures: () => void;
 }
 
-const ConversiveUseCases: React.FC<ConversiveUseCasesProps> = ({
+const ConversiveBetaFeatures: React.FC<ConversiveBetaFeaturesProps> = ({
   accountStatus,
   isStatusChecked,
   isUpdating,
   username,
   onUsernameChange,
-  useCases,
-  isLoadingUseCases,
-  onFetchUseCases,
-  onUpdateUseCaseSetting
+  betaFeatures,
+  isLoadingBetaFeatures,
+  onFetchBetaFeatures,
+  onUpdateBetaFeatureSetting,
+  onSaveBetaFeatures
 }) => {
-  const areUseCasesLoaded = useCases.length > 0;
+  const areBetaFeaturesLoaded = betaFeatures.length > 0;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium">Enable Conversive UseCases</h3>
+        <h3 className="font-medium">Enable Conversive Beta Features</h3>
       </div>
       
       {/* Username Input */}
@@ -55,45 +56,56 @@ const ConversiveUseCases: React.FC<ConversiveUseCasesProps> = ({
               value={username}
               onChange={(e) => onUsernameChange(e.target.value)}
               className="pl-10"
-              disabled={!isStatusChecked || isLoadingUseCases}
+              disabled={!isStatusChecked || isLoadingBetaFeatures}
             />
           </div>
           <Button 
-            onClick={onFetchUseCases}
-            disabled={!isStatusChecked || !username.trim() || isLoadingUseCases}
+            onClick={onFetchBetaFeatures}
+            disabled={!isStatusChecked || !username.trim() || isLoadingBetaFeatures}
             variant="outline"
           >
-            {isLoadingUseCases ? "Loading..." : "Fetch UseCases"}
+            {isLoadingBetaFeatures ? "Loading..." : "Fetch Beta Features"}
           </Button>
         </div>
       </div>
 
-      {/* Use Cases List */}
-      {areUseCasesLoaded && (
+      {/* Beta Features List */}
+      {areBetaFeaturesLoaded && (
         <div className="space-y-3">
-          <Label className="text-sm font-medium">Available Use Cases</Label>
-          {useCases.map((useCase) => (
-            <div key={useCase.feature_id} className="flex flex-row items-center justify-between rounded-lg border p-3">
+          <Label className="text-sm font-medium">Available Beta Features</Label>
+          {betaFeatures.map((feature) => (
+            <div key={feature.feature_id} className="flex flex-row items-center justify-between rounded-lg border p-3">
               <div className="space-y-0.5">
                 <Label className="text-base flex items-center">
                   <Settings className="h-4 w-4 mr-2 text-purple-500" />
-                  {useCase.feature_name}
+                  {feature.feature_name}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  {useCase.feature_code}
+                  {feature.feature_code}
                 </p>
               </div>
               <Switch
-                checked={useCase.enabled || false}
-                onCheckedChange={(checked) => onUpdateUseCaseSetting(useCase.feature_id, checked)}
+                checked={feature.enabled || false}
+                onCheckedChange={(checked) => onUpdateBetaFeatureSetting(feature.feature_id, checked)}
                 disabled={isUpdating}
               />
             </div>
           ))}
+          
+          <div className="flex justify-end">
+            <Button 
+              onClick={onSaveBetaFeatures}
+              disabled={isUpdating}
+              className="flex items-center gap-2"
+            >
+              <Save className="h-4 w-4" />
+              Save Beta Features
+            </Button>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default ConversiveUseCases;
+export default ConversiveBetaFeatures;

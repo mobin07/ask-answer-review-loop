@@ -2,7 +2,8 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Link } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link, Save } from "lucide-react";
 import { ConversiveStatus } from "@/types/conversive";
 
 interface ConversiveIntegrationsProps {
@@ -10,13 +11,15 @@ interface ConversiveIntegrationsProps {
   isStatusChecked: boolean;
   isUpdating: boolean;
   onUpdateSetting: (value: boolean) => void;
+  onSaveIntegration: () => void;
 }
 
 const ConversiveIntegrations: React.FC<ConversiveIntegrationsProps> = ({
   accountStatus,
   isStatusChecked,
   isUpdating,
-  onUpdateSetting
+  onUpdateSetting,
+  onSaveIntegration
 }) => {
   return (
     <div className="space-y-4">
@@ -39,6 +42,17 @@ const ConversiveIntegrations: React.FC<ConversiveIntegrationsProps> = ({
           onCheckedChange={onUpdateSetting}
           disabled={!isStatusChecked || isUpdating}
         />
+      </div>
+
+      <div className="flex justify-end">
+        <Button 
+          onClick={onSaveIntegration}
+          disabled={!isStatusChecked || isUpdating}
+          className="flex items-center gap-2"
+        >
+          <Save className="h-4 w-4" />
+          Save Integration
+        </Button>
       </div>
     </div>
   );

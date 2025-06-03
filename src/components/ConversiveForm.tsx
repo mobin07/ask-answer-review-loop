@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useConversiveSettings } from "@/hooks/useConversiveSettings";
 import AccountIdInput from "@/components/AccountIdInput";
 import ConversiveIntegrations from "@/components/ConversiveIntegrations";
-import ConversiveUseCases from "@/components/ConversiveUseCases";
+import ConversiveBetaFeatures from "@/components/ConversiveBetaFeatures";
 
 const ConversiveForm = () => {
   const { 
@@ -19,10 +19,12 @@ const ConversiveForm = () => {
     updateIntegrationSetting,
     username,
     setUsername,
-    useCases,
-    isLoadingUseCases,
-    fetchUseCases,
-    updateUseCaseSetting
+    betaFeatures,
+    isLoadingBetaFeatures,
+    fetchBetaFeatures,
+    updateBetaFeatureSetting,
+    saveIntegration,
+    saveBetaFeatures
   } = useConversiveSettings();
 
   return (
@@ -42,18 +44,20 @@ const ConversiveForm = () => {
           isStatusChecked={isStatusChecked}
           isUpdating={isUpdating}
           onUpdateSetting={updateIntegrationSetting}
+          onSaveIntegration={() => saveIntegration(accountId)}
         />
 
-        <ConversiveUseCases 
+        <ConversiveBetaFeatures 
           accountStatus={accountStatus}
           isStatusChecked={isStatusChecked}
           isUpdating={isUpdating}
           username={username}
           onUsernameChange={setUsername}
-          useCases={useCases}
-          isLoadingUseCases={isLoadingUseCases}
-          onFetchUseCases={() => fetchUseCases(accountId, username)}
-          onUpdateUseCaseSetting={updateUseCaseSetting}
+          betaFeatures={betaFeatures}
+          isLoadingBetaFeatures={isLoadingBetaFeatures}
+          onFetchBetaFeatures={() => fetchBetaFeatures(accountId, username)}
+          onUpdateBetaFeatureSetting={updateBetaFeatureSetting}
+          onSaveBetaFeatures={() => saveBetaFeatures(accountId, username)}
         />
       </div>
     </Card>

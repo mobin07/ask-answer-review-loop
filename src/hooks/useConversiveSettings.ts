@@ -8,10 +8,10 @@ export function useConversiveSettings() {
   const [username, setUsername] = useState("");
   const [isChecking, setIsChecking] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isLoadingUseCases, setIsLoadingUseCases] = useState(false);
+  const [isLoadingBetaFeatures, setIsLoadingBetaFeatures] = useState(false);
   const [accountStatus, setAccountStatus] = useState<ConversiveStatus | null>(null);
   const [isStatusChecked, setIsStatusChecked] = useState(false);
-  const [useCases, setUseCases] = useState<UseCase[]>([]);
+  const [betaFeatures, setBetaFeatures] = useState<UseCase[]>([]);
 
   // Function to check if account exists
   const checkAccountStatus = async (accountIdToCheck: string) => {
@@ -58,35 +58,38 @@ export function useConversiveSettings() {
     setUsername("");
     setAccountStatus(null);
     setIsStatusChecked(false);
-    setUseCases([]);
+    setBetaFeatures([]);
   };
 
   // Function to update integration setting
   const updateIntegrationSetting = async (value: boolean) => {
-    if (!isStatusChecked || !accountId) return;
+    setAccountStatus(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        conversiveIntegrationEnabled: value
+      };
+    });
+  };
+
+  // Function to save integration
+  const saveIntegration = async (accountIdToSave: string) => {
+    if (!isStatusChecked || !accountIdToSave) return;
     
     setIsUpdating(true);
     
     try {
-      await mockUpdateIntegrationSetting(accountId, value);
-
-      setAccountStatus(prev => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          conversiveIntegrationEnabled: value
-        };
-      });
+      await mockSaveIntegrationSetting(accountIdToSave, accountStatus?.conversiveIntegrationEnabled || false);
       
       toast({
-        title: "Integration Updated",
-        description: `Conversive integration has been ${value ? 'enabled' : 'disabled'} for account ${accountId}`,
+        title: "Integration Saved",
+        description: `Conversive integration has been ${accountStatus?.conversiveIntegrationEnabled ? 'enabled' : 'disabled'} for account ${accountIdToSave}`,
       });
       
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred updating integration",
+        description: error instanceof Error ? error.message : "An error occurred saving integration",
         variant: "destructive"
       });
     } finally {
@@ -94,8 +97,8 @@ export function useConversiveSettings() {
     }
   };
 
-  // Function to fetch use cases
-  const fetchUseCases = async (accountIdToFetch: string, usernameToFetch: string) => {
+  // Function to fetch beta features
+  const fetchBetaFeatures = async (accountIdToFetch: string, usernameToFetch: string) => {
     if (!accountIdToFetch.trim() || !usernameToFetch.trim()) {
       toast({
         title: "Error",
@@ -105,63 +108,65 @@ export function useConversiveSettings() {
       return;
     }
 
-    setIsLoadingUseCases(true);
+    setIsLoadingBetaFeatures(true);
     
     try {
-      const fetchedUseCases = await mockFetchUseCases(accountIdToFetch, usernameToFetch);
-      setUseCases(fetchedUseCases);
+      const fetchedBetaFeatures = await mockFetchBetaFeatures(accountIdToFetch, usernameToFetch);
+      setBetaFeatures(fetchedBetaFeatures);
       
       toast({
-        title: "Use Cases Loaded",
-        description: `Found ${fetchedUseCases.length} use cases for ${usernameToFetch}`,
+        title: "Beta Features Loaded",
+        description: `Found ${fetchedBetaFeatures.length} beta features for ${usernameToFetch}`,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred fetching use cases",
+        description: error instanceof Error ? error.message : "An error occurred fetching beta features",
         variant: "destructive",
       });
     } finally {
-      setIsLoadingUseCases(false);
+      setIsLoadingBetaFeatures(false);
     }
   };
 
-  // Function to update use case setting
-  const updateUseCaseSetting = async (featureId: number, enabled: boolean) => {
-    if (!accountId || !username) return;
+  // Function to update beta feature setting
+  const updateBetaFeatureSetting = async (featureId: number, enabled: boolean) => {
+    setBetaFeatures(prev => 
+      prev.map(feature => 
+        feature.feature_id === featureId 
+          ? { ...feature, enabled } 
+          : feature
+      )
+    );
+  };
+
+  // Function to save beta features
+  const saveBetaFeatures = async (accountIdToSave: string, usernameToSave: string) => {
+    if (!accountIdToSave || !usernameToSave) return;
     
     setIsUpdating(true);
     
     try {
       const payload: UseCaseUpdatePayload = {
-        account_id: parseInt(accountId),
-        username: username,
-        features: [{
-          feature_id: featureId,
-          feature_value: enabled ? 1 : 0
-        }]
+        account_id: parseInt(accountIdToSave),
+        username: usernameToSave,
+        features: betaFeatures.map(feature => ({
+          feature_id: feature.feature_id,
+          feature_value: feature.enabled ? 1 : 0
+        }))
       };
 
-      await mockUpdateUseCaseSetting(payload);
-
-      setUseCases(prev => 
-        prev.map(useCase => 
-          useCase.feature_id === featureId 
-            ? { ...useCase, enabled } 
-            : useCase
-        )
-      );
+      await mockSaveBetaFeatures(payload);
       
-      const useCase = useCases.find(uc => uc.feature_id === featureId);
       toast({
-        title: "Use Case Updated",
-        description: `${useCase?.feature_name} has been ${enabled ? 'enabled' : 'disabled'}`,
+        title: "Beta Features Saved",
+        description: `All beta features have been saved successfully`,
       });
       
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred updating use case",
+        description: error instanceof Error ? error.message : "An error occurred saving beta features",
         variant: "destructive"
       });
     } finally {
@@ -176,15 +181,17 @@ export function useConversiveSettings() {
     setUsername,
     isChecking,
     isUpdating,
-    isLoadingUseCases,
+    isLoadingBetaFeatures,
     accountStatus,
     isStatusChecked,
-    useCases,
+    betaFeatures,
     checkAccountStatus,
     resetForm,
     updateIntegrationSetting,
-    fetchUseCases,
-    updateUseCaseSetting
+    fetchBetaFeatures,
+    updateBetaFeatureSetting,
+    saveIntegration,
+    saveBetaFeatures
   };
 }
 
@@ -201,8 +208,10 @@ export const mockCheckConversiveStatus = async (accountIdToCheck: string): Promi
   };
 };
 
-export const mockUpdateIntegrationSetting = async (accountIdToUpdate: string, value: boolean) => {
+export const mockSaveIntegrationSetting = async (accountIdToUpdate: string, value: boolean) => {
   await new Promise(resolve => setTimeout(resolve, 800));
+  
+  console.log("Saving integration with API for account:", accountIdToUpdate, "value:", value);
   
   if (!accountIdToUpdate) {
     throw new Error("Invalid account ID");
@@ -210,18 +219,18 @@ export const mockUpdateIntegrationSetting = async (accountIdToUpdate: string, va
   
   return { 
     success: true, 
-    message: `Account ${accountIdToUpdate} conversive integration updated to ${value}` 
+    message: `Account ${accountIdToUpdate} conversive integration saved as ${value}` 
   };
 };
 
-export const mockFetchUseCases = async (accountId: string, username: string): Promise<UseCase[]> => {
+export const mockFetchBetaFeatures = async (accountId: string, username: string): Promise<UseCase[]> => {
   await new Promise(resolve => setTimeout(resolve, 1200));
   
   return [
     {
       feature_id: 37,
-      feature_name: "Conversive Usecases",
-      feature_code: "CONVRSV-USECASES",
+      feature_name: "Conversive Beta Features",
+      feature_code: "CONVRSV-BETA-FEATURES",
       enabled: Math.random() > 0.5
     },
     {
@@ -233,13 +242,13 @@ export const mockFetchUseCases = async (accountId: string, username: string): Pr
   ];
 };
 
-export const mockUpdateUseCaseSetting = async (payload: UseCaseUpdatePayload) => {
+export const mockSaveBetaFeatures = async (payload: UseCaseUpdatePayload) => {
   await new Promise(resolve => setTimeout(resolve, 800));
   
-  console.log("Updating use case with payload:", payload);
+  console.log("Saving beta features with API using payload:", payload);
   
   return { 
     success: true, 
-    message: "Use case updated successfully" 
+    message: "Beta features saved successfully" 
   };
 };
