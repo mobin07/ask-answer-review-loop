@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -31,9 +31,7 @@ const ConversiveUseCases: React.FC<ConversiveUseCasesProps> = ({
   onFetchUseCases,
   onUpdateUseCaseSetting
 }) => {
-  const [selectedUseCaseId, setSelectedUseCaseId] = useState<string>("");
   const areUseCasesLoaded = useCases.length > 0;
-  const selectedUseCase = useCases.find(uc => uc.feature_id.toString() === selectedUseCaseId);
 
   return (
     <div className="space-y-4">
@@ -70,52 +68,28 @@ const ConversiveUseCases: React.FC<ConversiveUseCasesProps> = ({
         </div>
       </div>
 
-      {/* Use Case Selection */}
+      {/* Use Cases List */}
       {areUseCasesLoaded && (
         <div className="space-y-3">
-          <Label className="text-sm font-medium">Select Use Case</Label>
-          <Select 
-            value={selectedUseCaseId} 
-            onValueChange={setSelectedUseCaseId}
-            disabled={isUpdating}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose a use case to configure" />
-            </SelectTrigger>
-            <SelectContent>
-              {useCases.map((useCase) => (
-                <SelectItem key={useCase.feature_id} value={useCase.feature_id.toString()}>
-                  <div className="flex items-center">
-                    <Settings className="h-4 w-4 mr-2 text-purple-500" />
-                    <div>
-                      <div className="font-medium">{useCase.feature_name}</div>
-                      <div className="text-sm text-muted-foreground">{useCase.feature_code}</div>
-                    </div>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Selected Use Case Toggle */}
-          {selectedUseCase && (
-            <div className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50">
+          <Label className="text-sm font-medium">Available Use Cases</Label>
+          {useCases.map((useCase) => (
+            <div key={useCase.feature_id} className="flex flex-row items-center justify-between rounded-lg border p-3">
               <div className="space-y-0.5">
                 <Label className="text-base flex items-center">
                   <Settings className="h-4 w-4 mr-2 text-purple-500" />
-                  {selectedUseCase.feature_name}
+                  {useCase.feature_name}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  {selectedUseCase.feature_code}
+                  {useCase.feature_code}
                 </p>
               </div>
               <Switch
-                checked={selectedUseCase.enabled || false}
-                onCheckedChange={(checked) => onUpdateUseCaseSetting(selectedUseCase.feature_id, checked)}
+                checked={useCase.enabled || false}
+                onCheckedChange={(checked) => onUpdateUseCaseSetting(useCase.feature_id, checked)}
                 disabled={isUpdating}
               />
             </div>
-          )}
+          ))}
         </div>
       )}
     </div>
