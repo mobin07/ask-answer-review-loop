@@ -11,6 +11,7 @@ import { MessageSquare, Loader2 } from "lucide-react";
 import StructuredAnswer from "@/components/StructuredAnswer";
 import BlockForm from "@/components/BlockForm";
 import AccountBlockForm from "@/components/AccountBlockForm";
+import ConversiveForm from "@/components/ConversiveForm";
 
 type MessageType = {
   id: string;
@@ -21,7 +22,7 @@ type MessageType = {
   helpful?: boolean | null;
 };
 
-type TabType = "BLOCK NO" | "ACCOUNT SETTINGS";
+type TabType = "BLOCK NO" | "ACCOUNT SETTINGS" | "CONVERSIVE SETTINGS";
 
 const ChatQnAPage = () => {
   const [messages, setMessages] = useState<MessageType[]>([]);
@@ -166,6 +167,12 @@ const ChatQnAPage = () => {
           >
             ACCOUNT SETTINGS
           </div>
+          <div 
+            className={`px-6 py-3 cursor-pointer border-b-2 ${activeTab === "CONVERSIVE SETTINGS" ? "border-pink-500 text-pink-500 font-medium" : "border-transparent"}`}
+            onClick={() => setActiveTab("CONVERSIVE SETTINGS")}
+          >
+            CONVERSIVE SETTINGS
+          </div>
         </div>
       </div>
 
@@ -175,6 +182,8 @@ const ChatQnAPage = () => {
           <BlockForm />
         ) : activeTab === "ACCOUNT SETTINGS" ? (
           <AccountBlockForm />
+        ) : activeTab === "CONVERSIVE SETTINGS" ? (
+          <ConversiveForm />
         ) : (
           <ScrollArea className="h-[calc(100vh-280px)] w-full pr-4">
             {messages.length === 0 ? (
